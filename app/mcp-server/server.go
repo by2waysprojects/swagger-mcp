@@ -394,11 +394,11 @@ func CreateMCPToolHandler(
 			q := u.Query()
 			for _, name := range reqQueryParam {
 				if arguments == nil {
-					return mcp.NewToolResultError(fmt.Sprintf("[Error] missing or invalid Query Parameter: %s", name)), nil
+					continue
 				}
 				val, ok := arguments[name].(string)
 				if !ok {
-					return mcp.NewToolResultError(fmt.Sprintf("[Error] missing or invalid Query Parameter: %s", name)), nil
+					continue
 				}
 				q.Set(name, val)
 			}
