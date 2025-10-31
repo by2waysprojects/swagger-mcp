@@ -100,3 +100,10 @@ type Config struct {
 	HttpCfg HttpConfig `json:"httpCfg"` // StreamableHTTP related configuration
 	ApiCfg  ApiConfig  `json:"apiCfg"`  // API related configuration
 }
+
+type JsonRpcResponse struct {
+	JSONRPC string      `json:"jsonrpc"`
+	Result  interface{} `json:"result,omitempty"`
+	Error   interface{} `json:"error,omitempty"`
+	ID      int         `json:"id"`
+}

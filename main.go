@@ -140,7 +140,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load Swagger spec: %v", err)
 	}
-	swagger.ExtractSwagger(swaggerSpec)
+	//swagger.ExtractSwagger(swaggerSpec)
 
 	config := models.Config{
 		SpecUrl: *specUrl,
@@ -179,7 +179,7 @@ func main() {
 			config.SpecUrl, config.SseCfg.SseUrl, config.SseCfg.SseAddr, config.ApiCfg.BaseUrl)
 
 	} else {
-		fmt.Printf("Starting server with specUrl: %s, Stdio mode.\n", config.SpecUrl)
+		//fmt.Printf("Starting server with specUrl: %s, Stdio mode.\n", config.SpecUrl)
 	}
 	mcpserver.CreateServer(swaggerSpec, config)
 }

@@ -20,6 +20,22 @@ import (
 )
 
 const headersKey = "__headersKey__"
+const maxToolNameLength = 64 // Maximum length for tool names
+
+// generateToolName creates a tool name with length limit
+// If the name exceeds maxToolNameLength, it truncates to 64 characters
+func generateToolName(method, path string) string {
+	// Remove braces from path parameters
+	cleanPath := strings.ReplaceAll(strings.ReplaceAll(path, "}", ""), "{", "")
+	fullName := fmt.Sprintf("%s_%s", method, cleanPath)
+
+	// Truncate if exceeds limit
+	if len(fullName) > maxToolNameLength {
+		return fullName[:maxToolNameLength]
+	}
+
+	return fullName
+}
 
 func ExtractSchemaName(ref, schemaType string) string {
 	if ref != "" {
@@ -288,7 +304,7 @@ func LoadSwaggerServer(mcpServer *server.MCPServer, swaggerSpec models.SwaggerSp
 			toolOption = append(toolOption, mcp.WithDescription(fmt.Sprintf(`Use this tool only when the request exactly matches %s or %s. If you dont have any of the required parameters then always ask user for it, *Dont fill any paramter on your own or keep it empty*. If there is [Error], only state that error in your reponse and stop the reponse there itself. *Do not ever maintain records in your memory for eg list of users or orders*`,
 				details.Summary, details.Description)))
 
-			toolName := fmt.Sprintf("%s_%s", method, strings.ReplaceAll(strings.ReplaceAll(path, "}", ""), "{", ""))
+			toolName := generateToolName(method, path)
 
 			mcpServer.AddTool(
 				mcp.NewTool(toolName, toolOption...),
@@ -465,7 +481,7 @@ func CreateMCPToolHandler(
 			return mcp.NewToolResultError(fmt.Sprintf("[Error] failed to marshal request body: %v", err)), nil
 		}
 
-		fmt.Printf("Request  : %s %s\n", strings.ToUpper(reqMethod), currentReqURL)
+		log.Printf("Request  : %s %s\n", strings.ToUpper(reqMethod), currentReqURL)
 		req, err := http.NewRequest(strings.ToUpper(reqMethod), currentReqURL, bytes.NewBuffer(reqBodyDataBytes))
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("[Error] failed to create HTTP request: %v", err)), nil
@@ -522,7 +538,7 @@ func CreateMCPToolHandler(
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("[Error] failed to read HTTP Response: %v", err)), nil
 		}
-		fmt.Printf("Response : %s\n", string(body))
+		log.Printf("Response : %s\n", string(body))
 		return mcp.NewToolResultText(string(body)), nil
 	}
 }
